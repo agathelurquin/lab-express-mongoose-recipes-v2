@@ -2,6 +2,7 @@ const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 
+const Recipe = require("./models/Recipe.model");
 const app = express();
 const MONGODB_URI = "mongodb://127.0.0.1:27017/express-mongoose-recipes-dev";
 
@@ -16,7 +17,7 @@ app.use(express.json());
 mongoose
   .connect(MONGODB_URI)
   .then((db) => {
-    console.log(`Connected to database, name: ${db.connections[O].name}`);
+    console.log(`Connected to database, name: ${db.connections[0].name}`);
   })
   .catch((e) => console.log("error connecting to Mongo", e));
 
