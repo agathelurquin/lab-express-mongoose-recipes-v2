@@ -30,21 +30,86 @@ app.get("/", (req, res) => {
 //  Iteration 3 - Create a Recipe route
 //  POST  /recipes route
 
+app.post("/recipes", (req, res, next) => {
+  const {
+    title,
+    instructions,
+    level,
+    ingredients,
+    image,
+    duration,
+    isArchived,
+    created,
+  } = req.body;
+  if (!title || !instructions) {
+    // res.status(404);
+    return res.json({
+      message: "Please provide all required information: title, instructions",
+    });
+  }
+
+  const newRecipe = {
+    title,
+    instructions,
+    level,
+    ingredients,
+    image,
+    duration,
+    isArchived,
+    created,
+  };
+
+  Recipe.create(newRecipe)
+    .then((newDbEntry) =>
+      res
+        .status(201)
+        .console.log(`Done ! PUT METHOD WORKS, added ${newDbEntry} to your db `)
+    )
+    .catch((e) => console.log("OUPS! :", e));
+});
+
 //  Iteration 4 - Get All Recipes
-//  GET  /recipes route
+
+app.get("/recipes", async (req, res, next) => {
+  console.log(req);
+  try {
+    const allRecipes = await Recipe.find();
+    res.json(allRecipes);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 //  Iteration 5 - Get a Single Recipe
-//  GET  /recipes/:id route
-
+app.get("/recipes/:id", (res, req, next) => {
+  const recipeId = req.params.id;
+  Recipe.findById(recipeId)
+    .then((oneRecipe) => res.json(oneRecipe))
+    .catch((e) => console.log(e));
+});
 //  Iteration 6 - Update a Single Recipe
-//  PUT  /recipes/:id route
+app.put("/recipes/:id", (req, res, next) => {
+  const recipeId = req.params.id;
+  Recipe.findByIdAndUpdate(recipeId, req.body, { new: true }).then(
+    res((updatedRecipe) => res.status(200).json(updatedRecipe)).catch((e) =>
+      console.log(e)
+    )
+  );
+});
 
 //  Iteration 7 - Delete a Single Recipe
-//  DELETE  /recipes/:id route
-
+app.delete("recipes/:id", (req, res, next) => {
+  const recipeId = req.params.id;
+  Recipe.findByIdAndDelete(recipeId)
+    .then(() => res.status(204).json({ message: `Recipe ${id} deleted` }))
+    .catch((e) =>
+      res.status(500).json({ message: "Error while deleting the recipe" })
+    );
+});
 // BONUS
 //  Bonus: Iteration 9 - Create a Single User
 //  POST  /users route
+app.post("/users");
 
 //  Bonus: Iteration 10 | Get a Single User
 //  GET /users/:id route
